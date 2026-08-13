@@ -34,12 +34,11 @@ def get_recent_form(team, current_idx):
     
     last5 = pd.concat([home_g, away_g]).sort_values('Date').tail(5)
     if len(last5) == 0:
-        return 0, 0, 0, 0.0, 0.0
+        return 0, 0.0, 0.0, 0.0
     
     return (
         int(last5['Pts'].sum()),
-        int(last5['GF'].sum()),
-        int(last5['GA'].sum()),
+        round(float(last5['GF'].mean()), 2),
         round(float(last5['Shots'].mean()), 2),
         round(float(last5['SoT'].mean()), 2)
     )
@@ -48,12 +47,33 @@ def get_recent_form(team, current_idx):
 home_form = [get_recent_form(df.loc[i, 'HomeTeam'], i) for i in range(len(df))]
 away_form = [get_recent_form(df.loc[i, 'AwayTeam'], i) for i in range(len(df))]
 
-form_cols = ['Pts_L5', 'GF_L5', 'GA_L5', 'Shots_L5', 'SoT_L5']
-df[['Home_' + col for col in form_cols]] = home_form
-df[['Away_' + col for col in form_cols]] = away_form
+df[['HomeRecentPoints', 'HomeAvgGoals', 'HomeAvgShots', 'HomeAvgShotsOnTarget']] = home_form
+df[['AwayRecentPoints', 'AwayAvgGoals', 'AwayAvgShots', 'AwayAvgShotsOnTarget']] = away_form
 
-# Cleanup and save
+# Cleanup temporary calculation columns
 df.drop(columns=['HomePoints', 'AwayPoints'], inplace=True)
+
+# ============================================================
+# FEATURE MATRIX (X) AND TARGET VARIABLE (y)
+# ============================================================
+
+features = [
+    "HomeRecentPoints",
+    "AwayRecentPoints",
+    "HomeAvgGoals",
+    "AwayAvgGoals",
+    "HomeAvgShots",
+    "AwayAvgShots",
+    "HomeAvgShotsOnTarget",
+    "AwayAvgShotsOnTarget"
+]
+
+X = df[features]
+y = df["FTR"]
+
+# Save cleaned dataset with engineered features
 df.to_csv("football_ml_cleaned_dataset.csv", index=False)
 
-print("Data cleaning & feature engineering completed! Cleaned dataset shape:", df.shape)
+print("Data cleaning, feature engineering, and X/y selection completed!")
+print("Feature matrix X shape:", X.shape)
+print("Target vector y shape:", y.shape)
