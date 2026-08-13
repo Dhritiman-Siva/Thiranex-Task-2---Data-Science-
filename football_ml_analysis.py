@@ -77,3 +77,9 @@ df.to_csv("football_ml_cleaned_dataset.csv", index=False)
 print("Data cleaning, feature engineering, and X/y selection completed!")
 print("Feature matrix X shape:", X.shape)
 print("Target vector y shape:", y.shape)
+
+print("\n--- First 5 rows of X ---")
+print(X.head())
+
+print("\n--- First 5 rows of y ---")
+print(y.head())
