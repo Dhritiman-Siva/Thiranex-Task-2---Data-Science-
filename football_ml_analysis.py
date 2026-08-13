@@ -3,10 +3,13 @@ import pandas as pd
 # Load the dataset
 df = pd.read_csv("football_ml_raw_dataset.csv")
 
-# 1. Remove duplicate rows
+# 1. Convert Date column to datetime format
+df['Date'] = pd.to_datetime(df['Date'], format='mixed')
+
+# 2. Remove duplicate rows
 df = df.drop_duplicates()
 
-# 2. Fill missing numerical values with column median
+# 3. Fill missing numerical values with column median
 num_cols = df.select_dtypes(include=['float64', 'int64']).columns
 for col in num_cols:
     df[col] = df[col].fillna(df[col].median())
