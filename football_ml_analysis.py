@@ -9,10 +9,9 @@ df['Date'] = pd.to_datetime(df['Date'], format='mixed')
 # 2. Remove duplicate rows
 df = df.drop_duplicates()
 
-# 3. Strip whitespace from string columns
-str_cols = df.select_dtypes(include=['object']).columns
-for col in str_cols:
-    df[col] = df[col].str.strip()
+# 3. Strip whitespace from HomeTeam and AwayTeam
+df["HomeTeam"] = df["HomeTeam"].str.strip()
+df["AwayTeam"] = df["AwayTeam"].str.strip()
 
 # 4. Standardize team names
 team_mapping = {
