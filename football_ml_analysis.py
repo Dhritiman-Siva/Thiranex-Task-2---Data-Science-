@@ -9,7 +9,12 @@ df['Date'] = pd.to_datetime(df['Date'], format='mixed')
 # 2. Remove duplicate rows
 df = df.drop_duplicates()
 
-# 3. Standardize team names
+# 3. Strip whitespace from string columns
+str_cols = df.select_dtypes(include=['object']).columns
+for col in str_cols:
+    df[col] = df[col].str.strip()
+
+# 4. Standardize team names
 team_mapping = {
     "Manchester City": "Man City",
     "Man united": "Man United"
@@ -17,7 +22,7 @@ team_mapping = {
 df["HomeTeam"] = df["HomeTeam"].replace(team_mapping)
 df["AwayTeam"] = df["AwayTeam"].replace(team_mapping)
 
-# 4. Fill missing numerical values with column median
+# 5. Fill missing numerical values with column median
 num_cols = df.select_dtypes(include=['float64', 'int64']).columns
 for col in num_cols:
     df[col] = df[col].fillna(df[col].median())
