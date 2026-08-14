@@ -83,3 +83,98 @@ print(X.head())
 
 print("\n--- First 5 rows of y ---")
 print(y.head())
+
+# ============================================================
+# STEP 6.4: TRAIN / TEST SPLIT (CHRONOLOGICAL SPLIT)
+# ============================================================
+
+# Step 1: Ensure the dataset is sorted by Date column (past to recent matches)
+df = df.sort_values("Date").reset_index(drop=True)
+
+# Re-assign feature matrix X and target y after sorting
+X = df[features]
+y = df["FTR"]
+
+# Step 2: Split into 80% training (older matches) and 20% testing (newer matches)
+# Set shuffle=False to preserve chronological order for football prediction
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.20, shuffle=False
+)
+
+print("\n--- Step 6.4: Train/Test Split Completed ---")
+print("Total matches:", len(df))
+print(f"Training set (older 80%): X_train shape = {X_train.shape}, y_train shape = {y_train.shape}")
+print(f"Testing set  (newer 20%): X_test shape  = {X_test.shape}, y_test shape  = {y_test.shape}")
+
+# ============================================================
+# STEP 6.5: MODEL CREATION (DECISION TREE CLASSIFIER)
+# ============================================================
+
+from sklearn.tree import DecisionTreeClassifier
+
+# Initialize Decision Tree Classifier model
+model = DecisionTreeClassifier(
+    max_depth=5,
+    random_state=42
+)
+
+print("\n--- Model Initialized ---")
+print("Model configuration:", model)
+
+# ============================================================
+# STEP 6.6: MODEL TRAINING
+# ============================================================
+
+# Train the Decision Tree Classifier model on older matches (X_train, y_train)
+model.fit(X_train, y_train)
+
+print("\n--- Model Training Completed ---")
+print("The Decision Tree Classifier model has been trained successfully!")
+
+# ============================================================
+# STEP 6.7: MAKE PREDICTIONS
+# ============================================================
+
+# Generate predictions on the test dataset (newer 20% matches)
+predictions = model.predict(X_test)
+
+print("\n--- Predictions Completed ---")
+print("Total test predictions made:", len(predictions))
+print("First 10 predictions:", predictions[:10])
+
+# ============================================================
+# STEP 6.8: MODEL ACCURACY & COMPARISON
+# ============================================================
+
+from sklearn.metrics import accuracy_score
+
+accuracy = accuracy_score(y_test, predictions)
+
+print("\nDecision Tree Accuracy:", accuracy)
+
+results = pd.DataFrame({
+    "Actual": y_test.values,
+    "Predicted": predictions
+})
+
+print("\n--- First 10 Test Matches: Actual vs Predicted ---")
+print(results.head(10))
+
+# ============================================================
+# STEP 6.9: CLASSIFICATION REPORT
+# ============================================================
+
+from sklearn.metrics import classification_report
+
+print("\n--- Classification Report ---")
+print(classification_report(y_test, predictions))
+
+
+
+
+
+
+
+
