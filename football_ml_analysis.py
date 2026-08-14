@@ -150,9 +150,9 @@ print("First 10 predictions:", predictions[:10])
 
 from sklearn.metrics import accuracy_score
 
-accuracy = accuracy_score(y_test, predictions)
+dt_accuracy = accuracy_score(y_test, predictions)
 
-print("\nDecision Tree Accuracy:", accuracy)
+print("\nDecision Tree Accuracy:", dt_accuracy)
 
 results = pd.DataFrame({
     "Actual": y_test.values,
@@ -170,6 +170,116 @@ from sklearn.metrics import classification_report
 
 print("\n--- Classification Report ---")
 print(classification_report(y_test, predictions))
+
+# ============================================================
+# RANDOM FOREST CLASSIFIER
+# ============================================================
+
+from sklearn.ensemble import RandomForestClassifier
+
+# Initialize Random Forest Classifier model
+rf_model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+print("\n--- Random Forest Model Initialized ---")
+print("Model configuration:", rf_model)
+
+# Train the Random Forest Classifier model on older matches (X_train, y_train)
+rf_model.fit(X_train, y_train)
+
+print("\n--- Random Forest Model Training Completed ---")
+print("The Random Forest model has been trained successfully!")
+
+# Generate predictions using the Random Forest model on test data
+rf_predictions = rf_model.predict(X_test)
+
+print("\n--- Random Forest Predictions Completed ---")
+print("First 10 Random Forest predictions:", rf_predictions[:10])
+
+# Calculate Random Forest accuracy score
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+
+print("\nRandom Forest Accuracy:", rf_accuracy)
+
+print("\n--- Random Forest Classification Report ---")
+print(classification_report(
+    y_test,
+    rf_predictions,
+    target_names=["Away Win", "Draw", "Home Win"]
+))
+
+print("\n--- Final Model Comparison ---")
+print("Decision Tree Accuracy:", round(dt_accuracy * 100, 2), "%")
+print("Random Forest Accuracy:", round(rf_accuracy * 100, 2), "%")
+
+# ============================================================
+# RANDOM FOREST CONFUSION MATRIX VISUALIZATION
+# ============================================================
+
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Compute confusion matrix
+cm = confusion_matrix(y_test, rf_predictions)
+
+plt.figure(figsize=(6, 5))
+
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt="d",
+    cmap="Blues",
+    xticklabels=["Away Win", "Draw", "Home Win"],
+    yticklabels=["Away Win", "Draw", "Home Win"]
+)
+
+plt.xlabel("Predicted Result")
+plt.ylabel("Actual Result")
+plt.title("Random Forest Confusion Matrix")
+
+plt.tight_layout()
+plt.savefig("rf_confusion_matrix.png")
+plt.show()
+
+# ============================================================
+# ACCURACY COMPARISON BAR CHART
+# ============================================================
+
+models = ["Decision Tree", "Random Forest"]
+accuracies = [dt_accuracy, rf_accuracy]
+
+plt.figure(figsize=(7, 5))
+
+plt.bar(models, accuracies)
+
+plt.ylabel("Accuracy")
+plt.title("Model Accuracy Comparison")
+
+plt.ylim(0, 1)
+plt.savefig("model_accuracy_comparison.png")
+plt.show()
+
+# Model performance decision
+if rf_accuracy > dt_accuracy:
+    print("\nRandom Forest performed better.")
+elif dt_accuracy > rf_accuracy:
+    print("\nDecision Tree performed better.")
+else:
+    print("\nBoth models had the same accuracy.")
+
+
+
+
+
+
+
+
+
+
+
 
 
 
